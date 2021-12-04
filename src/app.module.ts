@@ -6,6 +6,7 @@ import { configuration, validationSchema } from './config/configuration';
 import { UserModule } from './user/user.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [
@@ -14,6 +15,19 @@ import { ApolloServerPluginLandingPageLocalDefault } from 'apollo-server-core';
       envFilePath: 'env.development.local',
       load: [configuration],
       validationSchema,
+    }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        type: 'mongodb',
+        url: configService.get('database.url'),
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        synchronize: configService.get('environment') === 'DEVELOPMENT',
+        logging: configService.get('environment') === 'DEVELOPMENT',
+        entities: [],
+      }),
+      inject: [ConfigService],
     }),
     GraphQLModule.forRootAsync({
       imports: [ConfigModule],
