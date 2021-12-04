@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import NotFoundException from './exceptions/NotFoundException';
 
 @Injectable()
 export class AppService {
-  getHello(): string {
-    return 'Hello World!';
+  getRoot(): never {
+    return NotFoundException();
   }
 }
